@@ -2,7 +2,6 @@
 #define GRIDSTATE_H
 
 #include "State.h"
-#include <iostream>
 
 
 class GridState :
@@ -15,6 +14,7 @@ public:
 	virtual ~GridState();
 
 	void endState();
+	void updateKeybinds();
 	void update();
 	void render(sf::RenderTarget* target = nullptr);
 };

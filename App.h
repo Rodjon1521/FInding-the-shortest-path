@@ -3,6 +3,7 @@
 
 #include<SFML/Graphics.hpp>
 #include"GridState.h"
+#include"MainMenuState.h"
 
 
 class App
@@ -24,9 +25,14 @@ public:
 	virtual ~App();
 
 	//Methods
+
+	void endApp();
+
 	void updateSFMLEvents();
 	void update();
+
 	void render();
+
 	void run();
 };
 

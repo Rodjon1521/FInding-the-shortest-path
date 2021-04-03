@@ -3,20 +3,35 @@
 
 #include <vector>
 #include <stack>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 class State
 {
-private:
+protected:
 	sf::RenderWindow* window;
+
+private:
 	std::vector<sf::Texture> textures;
 
+	bool quit;
+
 public:
+
+	sf::Vector2i mousePosScreen;
+	sf::Vector2i mousePosWindow;
+	sf::Vector2f mousePosView;
+
 	State(sf::RenderWindow* window);
 	virtual ~State();
 
+	const bool& getQuit() const;
+
+	virtual void checkForQuit();
 	virtual void endState() = 0;
 
+	virtual void updateMousePos();
+	virtual void updateKeybinds() = 0;
 	virtual void update() = 0;
 	virtual void render(sf::RenderTarget* target = NULL) = 0;
 };
