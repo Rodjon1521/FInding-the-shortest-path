@@ -9,6 +9,11 @@ class MainMenuState :
 {
 private:
 	sf::RectangleShape background;
+	sf::Font font;
+
+	Button* appstate_btn;
+
+	void initFonts();
 
 public:
 	MainMenuState(sf::RenderWindow* window);
