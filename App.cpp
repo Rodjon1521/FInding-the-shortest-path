@@ -8,8 +8,7 @@ void App::initWindow()
 
 void App::initStates()
 {
-	this->states.push(new GridState(this->window));
-	this->states.push(new MainMenuState(this->window));
+	this->states.push(new MainMenuState(this->window, &this->states));
 }
 
 //Constructors/Destructors

@@ -10,11 +10,14 @@ class State
 {
 protected:
 	sf::RenderWindow* window;
+	bool quit;
+
+	std::stack<State*>* states;
 
 private:
 	std::vector<sf::Texture> textures;
 
-	bool quit;
+	
 
 public:
 
@@ -22,7 +25,7 @@ public:
 	sf::Vector2i mousePosWindow;
 	sf::Vector2f mousePosView;
 
-	State(sf::RenderWindow* window);
+	State(sf::RenderWindow* window, std::stack<State*>* states);
 	virtual ~State();
 
 	const bool& getQuit() const;

@@ -2,7 +2,7 @@
 #define GRIDSTATE_H
 
 #include "State.h"
-
+#include "MainMenuState.h"
 
 class GridState :
 	public State
@@ -10,7 +10,7 @@ class GridState :
 private:
 
 public:
-	GridState(sf::RenderWindow* window);
+	GridState(sf::RenderWindow* window, std::stack<State*>* states);
 	virtual ~GridState();
 
 	void endState();

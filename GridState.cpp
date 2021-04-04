@@ -1,7 +1,7 @@
 #include "GridState.h"
 
-GridState::GridState(sf::RenderWindow* window)
-	: State(window)
+GridState::GridState(sf::RenderWindow* window, std::stack<State*>* states)
+	: State(window, states)
 {
 }
 
