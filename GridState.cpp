@@ -3,6 +3,7 @@
 GridState::GridState(sf::RenderWindow* window, std::stack<State*>* states)
 	: State(window, states)
 {
+	map = new Map(tileSize, this->window->getSize().x, this->window->getSize().y, startPos, endPos);
 }
 
 GridState::~GridState()
@@ -27,5 +28,6 @@ void GridState::update()
 
 void GridState::render(sf::RenderTarget* target)
 {
-
+	this->window->clear();
+	this->window->draw(*map);
 }
