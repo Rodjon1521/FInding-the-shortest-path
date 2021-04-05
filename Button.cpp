@@ -24,7 +24,33 @@ Button::Button(float x, float y, float width, float height,
 	this->activeColor = activeColor;
 
 	this->rect.setFillColor(this->idleColor);
+}
 
+Button::Button(float x, float y, float width, float height,
+	sf::Font* font, std::string text,
+	button_textures texture)
+{
+	this->rect.setPosition(sf::Vector2f(x, y));
+	this->rect.setSize(sf::Vector2f(width, height));
+
+	this->font = font;
+	this->text.setFont(*this->font);
+	this->text.setString(text);
+	this->text.setFillColor(sf::Color::White);
+	this->text.setCharacterSize(12);
+	this->text.setPosition(
+		this->rect.getPosition().x + (this->rect.getGlobalBounds().width / 2.f) - this->text.getGlobalBounds().width / 2.f,
+		this->rect.getPosition().y + (this->rect.getGlobalBounds().height / 2.f) - this->text.getGlobalBounds().height / 2.f
+	);
+
+	this->texture = new sf::Texture();
+
+	if (texture == button_textures::BLOCK_TEXTURE) {
+		this->texture->loadFromFile("textures/block.png");
+		this->rect.setTexture(this->texture);
+	}
+
+	this->buttonState = TEXTURE_BUTTON;
 }
 
 Button::~Button()
@@ -41,34 +67,36 @@ const bool Button::isPressed() const
 
 void Button::update(const sf::Vector2f mousePos)
 {
-	this->buttonState = BUTTON_IDLE;
-	if (this->rect.getGlobalBounds().contains(mousePos))
-	{
-		this->buttonState = BUTTON_HOVER;
-
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	if (this->buttonState != TEXTURE_BUTTON) {
+		this->buttonState = BUTTON_IDLE;
+		if (this->rect.getGlobalBounds().contains(mousePos))
 		{
-			this->buttonState = BUTTON_PRESSED;
+			this->buttonState = BUTTON_HOVER;
+
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				this->buttonState = BUTTON_PRESSED;
+			}
 		}
-	}
 
-	switch (this->buttonState)
-	{
-	case BUTTON_IDLE:
-		this->rect.setFillColor(this->idleColor);
-		break;
-		
-	case BUTTON_HOVER:
-		this->rect.setFillColor(this->hoverColor);
-		break;
+		switch (this->buttonState)
+		{
+		case BUTTON_IDLE:
+			this->rect.setFillColor(this->idleColor);
+			break;
 
-	case BUTTON_PRESSED:
-		this->rect.setFillColor(this->activeColor);
-		break;
+		case BUTTON_HOVER:
+			this->rect.setFillColor(this->hoverColor);
+			break;
 
-	default:
-		this->rect.setFillColor(sf::Color::Red);
-		break;
+		case BUTTON_PRESSED:
+			this->rect.setFillColor(this->activeColor);
+			break;
+
+		default:
+			this->rect.setFillColor(sf::Color::Red);
+			break;
+		}
 	}
 }
 

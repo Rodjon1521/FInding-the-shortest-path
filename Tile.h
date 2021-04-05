@@ -2,27 +2,28 @@
 #define TILE_H
 
 #include <SFML/Graphics.hpp>
+#include <vector>
+
 
 namespace tile {
 	enum ID {
-		Start, End, Path, Empty, nonWalkable
+		Start, End, Path, Empty, Block
 	};
 }
 
-class Tile : public sf::Drawable, public sf::Transformable {
-	sf::RectangleShape rect;
+class Tile
+{
 	tile::ID id;
+	sf::Texture* texture;
 
-	static sf::Color IDtoColor(tile::ID id);
+	void IDtoTexture(tile::ID id);
 public:
-	explicit Tile(sf::IntRect intrect, tile::ID id = tile::Empty);
+	sf::RectangleShape rect;
+
 	Tile();
-
-	void setID(tile::ID id);
-	tile::ID getID() const;
-
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	Tile(sf::IntRect, tile::ID = tile::Empty);
 };
+
 
 
 #endif

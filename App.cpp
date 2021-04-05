@@ -3,7 +3,7 @@
 //Init
 void App::initWindow()
 {
-	this->window = new sf::RenderWindow(sf::VideoMode(1000, 600), "Finding the shortest path");
+	this->window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Finding the shortest path");
 }
 
 void App::initStates()
