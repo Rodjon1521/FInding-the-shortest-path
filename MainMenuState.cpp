@@ -7,13 +7,20 @@ void MainMenuState::initFonts()
 
 void MainMenuState::initButtons()
 {
-	this->buttons["GRID_BUTTON"] = new Button(100, 100, 150, 50,
+	this->buttons["GRID_BUTTON"] = new Button(100, 250, 300, 100,
 		&this->font, "Grid",
-		sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
 
-	this->buttons["QUIT_BUTTON"] = new Button(100, 300, 150, 50,
+	this->buttons["QUIT_BUTTON"] = new Button(100, 500, 300, 100,
 		&this->font, "Quit",
-		sf::Color(100, 100, 100, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+}
+
+void MainMenuState::initBackground()
+{
+	this->background.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	this->bgTexture.loadFromFile("Textures/bg.png");
+	this->background.setTexture(&this->bgTexture);
 }
 
 MainMenuState::MainMenuState(sf::RenderWindow* window, std::stack<State*>* states)
@@ -21,9 +28,7 @@ MainMenuState::MainMenuState(sf::RenderWindow* window, std::stack<State*>* state
 {
 	initFonts();
 	initButtons();
-
-	this->background.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
-	this->background.setFillColor(sf::Color::Magenta);
+	initBackground();
 }
 
 MainMenuState::~MainMenuState()
@@ -68,6 +73,19 @@ void MainMenuState::update()
 	{
 		this->states->push(new GridState(this->window, this->states));
 	}
+
+	if (this->buttons["GRID_BUTTON"]->isHover())
+	{
+		this->gridRect.setSize(sf::Vector2f(700.0, 450.0));
+		this->gridRect.setPosition(sf::Vector2f(500.0, 200.0));
+		this->grid.loadFromFile("Textures/grid.jpg");//загружаем в него файл
+		this->gridRect.setTexture(&this->grid);
+		this->gridRect.setFillColor(sf::Color::White);
+	}
+	else
+	{
+		this->gridRect.setFillColor(sf::Color(255, 255, 255, 0));
+	}
 }
 
 void MainMenuState::renderButtons(sf::RenderTarget* target)
@@ -84,6 +102,7 @@ void MainMenuState::render(sf::RenderTarget* target)
 		target = this->window;
 
 	target->draw(this->background);
+	target->draw(this->gridRect);
 	this->renderButtons(target);
 
 }

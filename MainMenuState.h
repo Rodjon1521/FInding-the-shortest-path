@@ -11,13 +11,17 @@ class MainMenuState :
 	public State
 {
 private:
+	sf::Texture bgTexture;
 	sf::RectangleShape background;
 	sf::Font font;
+	sf::Texture grid;
+	sf::RectangleShape gridRect;
 
 	std::map<std::string, Button*> buttons;
 
 	void initFonts();
 	void initButtons();
+	void initBackground();
 
 public:
 	MainMenuState(sf::RenderWindow* window, std::stack<State*>* states);

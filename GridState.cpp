@@ -2,19 +2,35 @@
 
 void GridState::initButtons()
 {
-	this->buttons["START_BUTTON"] = new Button(10, 10, 150, 50,
+	this->buttons["START_BUTTON"] = new Button(10, 10, 180, 70,
 		&this->font, "Start",
-		sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
 
-	this->buttons["END_BUTTON"] = new Button(10, 70, 150, 50,
+	this->buttons["END_BUTTON"] = new Button(10, 110, 180, 70,
 		&this->font, "End",
-		sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
 
-	this->buttons["EMPTY_BUTTON"] = new Button(10, 130, 150, 50,
+	this->buttons["EMPTY_BUTTON"] = new Button(10, 210, 180, 70,
 		&this->font, "Empty",
-		sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
 
-	this->buttons["BLOCK_BUTTON"] = new Button(10, 190, 150, 50, &this->font, "Block", button_textures::BLOCK_TEXTURE);
+	this->buttons["BLOCK_BUTTON"] = new Button(10, 310, 180, 70,
+		&this->font, "Block",
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+
+	this->buttons["DIAGONALLY"] = new Button(10, 450, 180, 70,
+		&this->font, "Diagonaly",
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+
+	this->buttons["CLEAR_BUTTON"] = new Button(10, 550, 180, 70,
+		&this->font, "Clear",
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+
+	this->buttons["PATH_BUTTON"] = new Button(10, 650, 180, 70,
+		&this->font, "Path",
+		sf::Color(40, 40, 40, 255), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+
+	
 }
 
 void GridState::initFonts()
@@ -27,8 +43,11 @@ GridState::GridState(sf::RenderWindow* window, std::stack<State*>* states)
 {
 	initFonts();
 	initButtons();
+	this->background.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	this->background.setFillColor(sf::Color(40,40,40,255));
 	map = new Map(tileSize, this->window->getSize().x, this->window->getSize().y);
-	//this->path((sf::Vector2i)this->startPos, (sf::Vector2i)this->endPos);
+	map->setIDtoTile(sf::Vector2f{ 230.0, 30.0 }, tile::Start);
+	map->setIDtoTile(sf::Vector2f{ 1250.0, 660.0 }, tile::End);
 }
 
 GridState::~GridState()
@@ -39,65 +58,66 @@ GridState::~GridState()
 	}
 }
 
-/*void GridState::path(sf::Vector2i startPos, sf::Vector2i endPos)
+void GridState::path()
 {
-	int w = this->window->getSize().x / this->tileSize;
-	int h = this->window->getSize().y / this->tileSize;
-	int** grid = new int*[h];
-	for (int i = 0; i < h; i++) grid[i] = new int[w];
-
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++)
-			grid[i][j] = -2;
+	std::vector<int> dx;
+	std::vector<int> dy;
+	if (this->canMoveDiagonally) {
+		dx = { 1, 0, -1, 0, 1,1,-1,-1 };
+		dy = { 0, 1, 0, -1, 1,-1,1,-1 };
+	}
+	else
+	{
+		dx = { 1, 0, -1, 0 };
+		dy = { 0, 1, 0, -1 };
 	}
 
-	int* px = new int[w * h];
-	int* py = new int[w * h];
 
-	int dx[4] = { 1, 0, -1, 0 };
-	int dy[4] = { 0, 1, 0, -1 };
 
 	int d, x, y, k;
-	bool stop;
-
+	bool stop = false;
 	d = 0;
-	grid[startPos.y / this->tileSize][startPos.x / this->tileSize] = 0;
-	do {
+	while (!stop && map->grid[map->endPos.y][map->endPos.x] == -2){
 		stop = true;               // предполагаем, что все свободные клетки уже помечены
-		for (y = 0; y < h; ++y)
-			for (x = 0; x < w; ++x)
-				if (grid[y][x] == d)                         // ячейка (x, y) помечена числом d
+		for (y = 0; y < map->grid.size(); ++y)
+			for (x = 0; x < map->grid[y].size(); ++x)
+				if (map->grid[y][x] == d)                         // ячейка (x, y) помечена числом d
 				{
-					for (k = 0; k < 4; ++k)                    // проходим по всем непомеченным соседям
+					for (k = 0; k < dx.size(); ++k)                    // проходим по всем непомеченным соседям
 					{
 						int iy = y + dy[k], ix = x + dx[k];
-						if (iy >= 0 && iy < h && ix >= 0 && ix < w &&
-							grid[iy][ix] == -2)
+						if (iy >= 0 && iy < map->grid.size() && ix >= 0 && ix < map->grid[y].size() &&
+							map->grid[iy][ix] == -2 && map->grid[iy][ix] != -1)
 						{
+							map->grid[iy][ix] = d + 1;      // распространяем волну
+							map->setIDtoTile(sf::Vector2f{ (float)((ix + 1) * tileSize + 200), (float)(iy * tileSize + 30) }, tile::Wave);
+							map->setTexttoTile(sf::Vector2f{ (float)((ix + 1) * tileSize + 200), (float)(iy * tileSize + 30) }, std::to_string(d));
+							this->window->draw(*map);
+							this->window->display();
+							for (int i = 0; i < 1000; i++);
 							stop = false;              // найдены непомеченные клетки
-							grid[iy][ix] = d + 1;      // распространяем волну
+							
 						}
 					}
 				}
 		d++;
-	} while (!stop && grid[endPos.y / this->tileSize][endPos.x / this->tileSize] == -2);
+	} 
+	map->setIDtoTile(sf::Vector2f{ (float)((map->endPos.x + 1) * tileSize + 200), (float)(map->endPos.y * tileSize + 30) }, tile::End);
 
-
-
-	// восстановление пути
-	x = endPos.x / this->tileSize;
-	y = endPos.y / this->tileSize;
-	d = grid[endPos.y / this->tileSize][endPos.x / this->tileSize];
+	std::vector<sf::Vector2f> p;
+	x = map->endPos.x;
+	y = map->endPos.y;
+	d = map->grid[map->endPos.y][map->endPos.x];
 	while (d > 0)
 	{
-		px[d] = x;
-		py[d] = y;                // записываем ячейку (x, y) в путь
+		if(d!= map->grid[map->endPos.y][map->endPos.x])
+			p.push_back(sf::Vector2f{ (float)((x+1)*tileSize+200), (float)(y*tileSize+30) });
 		d--;
-		for (k = 0; k < 4; ++k)
+		for (k = 0; k < dx.size(); ++k)
 		{
 			int iy = y + dy[k], ix = x + dx[k];
-			if (iy >= 0 && iy < h && ix >= 0 && ix < w &&
-				grid[iy][ix] == d)
+			if (iy >= 0 && iy < map->grid.size() && ix >= 0 && ix < map->grid[iy].size() &&
+				map->grid[iy][ix] == d)
 			{
 				x = x + dx[k];
 				y = y + dy[k];           // переходим в ячейку, которая на 1 ближе к старту
@@ -105,17 +125,14 @@ GridState::~GridState()
 			}
 		}
 	}
-	px[0] = startPos.x / this->tileSize;
-	py[0] = startPos.y / this->tileSize;
 
-
-	for (int i = 0; i < endPos.y / this->tileSize + endPos.x / this->tileSize; i++)
-		std::cout << px[i] << " " << py[i] << std::endl;
-
-
-	for (int i = 0; i < endPos.y / this->tileSize + endPos.x / this->tileSize; i++)
-		map->setIDtoTile(sf::Vector2f(px[i] * this->tileSize, py[i] * this->tileSize), tile::Path);
-}*/
+	for (int i = 0; i < p.size(); i++) {
+		map->setIDtoTile(p[i], tile::Path);
+		this->window->draw(*map);
+		this->window->display();
+		for (int i = 0; i < 100000; i++);
+	}
+}
 
 void GridState::endState()
 {
@@ -137,25 +154,29 @@ void GridState::updateButtons()
 
 void GridState::update()
 {
-	//if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->mousePosView.x > 170)
-	//{
-	//	map->setIDtoTile(this->mousePosView, id);
-	//}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->mousePosView.x > 200)
+	{
+		map->setIDtoTile(this->mousePosView, id);
+	}
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		this->states->push(new MainMenuState(this->window, this->states));
 
 	this->updateKeybinds();
 	this->updateMousePos();
 
 	this->updateButtons();
+	this->startPos = map->getStart().getPosition();
+	this->endPos = map->getEnd().getPosition();
 
 	if (this->buttons["START_BUTTON"]->isPressed()) id = tile::Start;
-
 	if (this->buttons["END_BUTTON"]->isPressed()) id = tile::End;
-
+	if (this->buttons["BLOCK_BUTTON"]->isPressed()) id = tile::nonWalkable;
 	if (this->buttons["EMPTY_BUTTON"]->isPressed()) id = tile::Empty;
 
-
-	//std::cout << this->mousePosView.x << " " << this->mousePosView.y << std::endl;
-	//system("cls");
+	if (this->buttons["PATH_BUTTON"]->isPressed()) this->path();
+	if(this->buttons["CLEAR_BUTTON"]->isPressed()) map->clearPath(200,30,this->window->getSize().x-30, this->window->getSize().y-30);
+	if (this->buttons["DIAGONALLY"]->isPressed()) this->canMoveDiagonally = !this->canMoveDiagonally;
 }
 
 void GridState::renderButtons(sf::RenderTarget* target)
@@ -169,6 +190,7 @@ void GridState::renderButtons(sf::RenderTarget* target)
 void GridState::render(sf::RenderTarget* target)
 {
 	this->window->clear();
+	this->window->draw(this->background);
 	this->window->draw(*map);
 	this->renderButtons(target);
 }

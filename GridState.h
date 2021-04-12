@@ -10,10 +10,15 @@ class GridState :
 	public State
 {
 private:
-	int tileSize = 50;
+	sf::RectangleShape background;
+	sf::Texture bg;
+
+	int tileSize = 30;
 	sf::Vector2f startPos;
 	sf::Vector2f endPos;
 	Map* map;
+
+	bool canMoveDiagonally = false;
 
 	tile::ID id = tile::Empty;
 
@@ -27,7 +32,7 @@ public:
 	GridState(sf::RenderWindow* window, std::stack<State*>* states);
 	virtual ~GridState();
 
-	void path(sf::Vector2i startPos, sf::Vector2i endPos);
+	void path();
 
 	void endState();
 	void updateKeybinds();

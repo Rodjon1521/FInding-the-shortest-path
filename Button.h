@@ -15,8 +15,6 @@ private:
 	sf::Font* font;
 	sf::Text text;
 
-	sf::Texture* texture;
-
 	sf::Color idleColor;
 	sf::Color hoverColor;
 	sf::Color activeColor;
@@ -25,11 +23,10 @@ public:
 	Button(float x, float y, float width, float height,
 		sf::Font* font, std::string text,
 		sf::Color idleColor, sf::Color hoverColor, sf::Color activeColor);
-	Button(float x, float y, float width, float height,
-		sf::Font* font, std::string text, button_textures texture);
 	virtual ~Button();
 
 	const bool isPressed() const;
+	const bool isHover() const;
 
 	void update(const sf::Vector2f mousePos);
 	void render(sf::RenderTarget* target);
